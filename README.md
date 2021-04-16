@@ -8,7 +8,7 @@ This project aims to analyze the Los Angeles Department of Transportation's plan
 1. Use NLP techniques to analyze the intent of documents from City Council and the Department of Transportation.
 2. Analyze the effectiveness of "public outreach" efforts using social media, news articles, and historical citation data.
 3. Use Street Sweeping Citation data to determine the impact of "public outreach" efforts.
-4. Recommend ways for LADOT to improve public engagement.
+4. Recommend concrete strategies for LADOT to improve public engagement in the future.
 
 ## Background
 
@@ -117,7 +117,6 @@ Text Analysis
 #### Hypotheses
 1. Fines collected from 10/15/2020 - 11/15/2020 significantly greater than average?
 2. Was the public's sentiment of LADOT's enforcement on 10/15/2020 negative?
-3. Public outreach efforts were ineffective.
 
 ### Conclusions
 
