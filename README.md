@@ -14,8 +14,8 @@ On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across t
 - If the owner does not move their vehicle, they receive a $73 citation.
 
 ### City Council Votes to Resume Street Sweeping
-Between September 1, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
-- LADOT and City Council members used Twitter to spead the announcement.
+Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
+- LADOT and City Council members used Twitter to spread the initial announcement.
 - News stations did not cover the story until October 15, 2020 or later.
 - LADOT placed flyers on windshields.
 
@@ -52,15 +52,15 @@ Access the Los Angeles City Council documents from the official source [here](ht
 - What strategies did the City of Los Angeles use to inform the public?
 - Which streets and neighborhoods were impacted?
 
-## Project Steps
-### Acquire
+# Project Steps
+## Acquire
 __Parking Citation Data__
 Download the dataset [here](https://www.kaggle.com/cityofLA/los-angeles-parking-citations/discussion) stored as `parking-citations.csv`. The dataset contains approximately 7 years worth of parking citations issued in Los Angeles, California.
 
 __Text data__
 - Twitter: Los Angeles City Council and the Los Angeles Department of Transportation.
 
-### Prepare
+## Prepare
 **Missing Values**
 - Dropped rows missing `latitude` and `longitude` data. 99999.0 indicated a null value.
 - Dropped rows missing license plate expiration date.
@@ -81,20 +81,19 @@ __Text data__
 - Created a new column called `issue_hour`.
 - Created a new column called `issue_minute`.
 
-### Explore
+## Explore
 
-#### Street Sweeping Citations
+### City Council and the Los Angeles Department of Transportation Twitter Data
+
+### Street Sweeping Citations
 Parking Citations
 - Map of citations
 
-#### City Council and the Los Angeles Department of Transportation Twitter Data
-
-
-#### Hypotheses
+### Hypotheses
 Were street sweeping fines collected from 10/15/2020 - 11/15/2020 significantly greater than average?
 
 
-### Conclusions
+## Conclusions
 
 
 ## How to Reproduce
