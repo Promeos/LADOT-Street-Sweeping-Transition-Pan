@@ -1,6 +1,6 @@
 ![Header](visuals/ladot.png)
 
-# Executive Summary
+![Executive-Summary](visuals/ladot_executive_summary.png)
 ## Goals
 
 1. Use Twitter's API to analyze tweets from City Council and the Los Angeles Department of Transportation from 09/30/2020 - 10/15/2020.
