@@ -81,8 +81,6 @@ __Text data__
 - Created a new column called `issue_hour`.
 - Created a new column called `issue_minute`.
 
-[Placeholder: Prep Web Scraped Data]
-
 ### Explore
 
 #### Street Sweeping Citations
