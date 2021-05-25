@@ -4,8 +4,7 @@
 ## Goals
 
 1. Analyze the effectiveness of "public outreach" efforts by analyzing tweets from 09/30/2020 - 10/15/2020.
-2. Use Street Sweeping Citation data to determine the impact of "public outreach" efforts.
-3. Recommend concrete strategies for LADOT to improve public engagement in the future.
+2. Use Street Sweeping Citation data to determine the impact of public outreach efforts.
 
 ## Background
 
