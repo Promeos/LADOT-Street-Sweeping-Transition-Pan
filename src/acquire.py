@@ -1,28 +1,12 @@
 import pandas as pd
 import os
 import sys
-
 import json
-
-import time
-from time import time
-
 import tqdm
-import requests
+
+from time import time
 from requests import get
 from time import sleep
-
-from bs4 import BeautifulSoup
-from random import randint
-from warnings import warn
-from IPython.core.display import clear_output
-
-# Functions to scrape youtube comments
-# from selenium.webdriver import Chrome
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
 
 sys.path.insert(1, '../env.py')
 import env
@@ -177,7 +161,17 @@ def get_twitter_usernames():
 
 def tweet_info(account, tweet):
     '''
-    
+    Structures the data returned from Twitter's API into a Pandas DataFrame.
+
+    Parameters
+    ----------
+    file : str
+        The name of the file in the local directory
+        
+    Returns
+    -------
+    tweet_data
+
     '''
     tweet_data = pd.DataFrame({'post_time': pd.to_datetime(tweet['created_at']),
                                            'id': account['id'],
@@ -224,7 +218,6 @@ def get_twitter_data():
         twitter_accounts = get_twitter_usernames()
         
         # Calculate the # of Twitter accounts in `twitter_accounts`
-        
         num_accounts = len(twitter_accounts)
         
         # Store the URL header to a variable
@@ -236,7 +229,7 @@ def get_twitter_data():
         # For each account in the dataframe `twitter_accounts` acquire all tweets from
         # 09-30-2020 to 10-14-2020.
         # "tqdm.tqdm()" used to display loading status.
-        for index, account in tqdm.tqdm(twitter_accounts.iterrows(), total=num_accounts):
+        for _, account in tqdm.tqdm(twitter_accounts.iterrows(), total=num_accounts):
             # API URL to acquire data from a specific Twitter account.
             url = f"https://api.twitter.com/2/users/{account['id']}/tweets?user.fields=created_at,description"\
                 + ",entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics"\
@@ -269,90 +262,8 @@ def get_twitter_data():
         # Cache the dataframe as a CSV file in the local directory.
         df.to_csv(filename, index=False)
         
-        # Return Twitter datav
+        # Return Twitter data
         return df
     else:
         # Return Twitter data
-        return cache
-
-    
-####################################### Acquire News Article Data ######################################
-def url_request(url):
-    '''
-    Accepts a URL
-    Returns a response object
-    '''
-    headers = {"User-Agent": "Promeos"}
-    response = get(url, headers=headers)
-    return response
-    
-
-def web_scrape_in_progress(requests, response, start_time):
-    '''
-    This function accepts a response object
-    Returns the status of url scraped.
-    '''
-    if response.status_code != 200:
-        warn(f"Request{requests}, Status Code {response.status_code}")
-    elapsed_time = time() - start_time
-    sleep(randint(1, 2))
-    requests += 1
-    print(f'Request: {requests}; Frequency: {requests/elapsed_time:.2f} requests/s')
-    clear_output(wait=True)
-    return requests
-
-
-def get_news_articles():
-    '''
-    This function returns 3 articles as list of dictionaries.
-    
-    Each dictionary has a title, date published, and article.
-    '''
-    file_name = 'news_articles.json'
-    # Check to see if a local cache of data exists
-    cache = check_local_cache(file=file_name)
-    
-    # If a local cache does not exist, scrape the blog posts
-    if cache is False:
-        # Create a counter and timer to display update messages throughout the query
-        requests = 0
-        start_time = time()
-        
-        # Create an empty list to store each article as a dictionary.
-        blog_posts = []
-        counter = 0
-        # The websites we want to scrape
-        blog_urls = [
-            'https://www.latimes.com/california/story/2020-03-16/los-angeles-parking-ticket-street-sweeping-coronavirus-covid19',
-            'https://www.latimes.com/california/story/2020-10-15/street-sweeping-parking-enforcement-resumes-today',
-            'https://abc7.com/society/las-resumed-parking-enforcement-prompts-outcry/7079278/'        
-        ]
-
-        for url in blog_urls:
-            counter += 1
-            
-            response = url_request(url=url)
-            requests = web_scrape_in_progress(requests=requests, response=response, start_time=start_time)
-            soup = BeautifulSoup(response.text, 'html.parser')
-
-            if counter < 3:
-                title = soup.find('h1').text.strip()
-                date_published = soup.find('div', class_='published-day').text
-                article = soup.find('div', class_='rich-text-article-body-content rich-text-body').text.strip()
-
-                blog_posts.append({'date_published': date_published,
-                                   'title': title,
-                                   'article': article})
-            else:
-                title = soup.find('h1').get_text()
-                date_published = soup.find('meta', attrs={'itemprop': 'uploadDate'})['content']
-                article = soup.find('div', class_='body-text').text
- 
-                blog_posts.append({'date_published': date_published,
-                                   'title': title,
-                                   'article': article})               
-
-        pd.DataFrame(blog_posts).to_json(file_name)
-        return pd.DataFrame(blog_posts)
-    else:
         return cache

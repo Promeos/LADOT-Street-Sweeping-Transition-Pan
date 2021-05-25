@@ -8,3 +8,5 @@ sweeper_routes/
 *.mov
 news.ipynb
 env.py
+temp.py
+.env
