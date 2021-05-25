@@ -3,8 +3,6 @@ import os
 import sys
 import json
 import tqdm
-
-from time import time
 from requests import get
 from time import sleep
 
@@ -23,17 +21,21 @@ def get_citation_data():
     df : pandas.core.DataFrame
         Pandas dataframe of Los Angeles parking citations.
     '''
-    df = pd.read_csv('parking-citations.csv')
+    df = pd.read_csv('./data/parking-citations.csv')
     return df
 
 
 def get_sweep_data():
     '''
     Returns a dataframe of Street Sweeping citations issued in
-    Los Angeles, CA from 01/01/2017 - 12/22/2020
+    Los Angeles, CA from 01/01/2017 - 04/12/2021
+    
+    Returns
+    -------
+    df_sweep : pandas.core.DataFrame
     '''
     # File name of street sweeping data
-    filename = 'street-sweeping-data.csv'
+    filename = './data/sweeping-citations.csv'
 
     if os.path.exists(filename):
         return pd.read_csv(filename)
@@ -41,7 +43,7 @@ def get_sweep_data():
         df = get_citation_data()
         
         # Filter for street sweeper citations data issued 2017-Today.
-        df_sweep = df.loc[(df['Issue Date'] >= '2017-01-01')&(df['Violation Description']=='NO PARK/STREET CLEAN')]
+        df_sweep = df.loc[(df['Issue Date'] >= '2017-01-01')&(df['Violation Description'].str.contains('STREET CLEAN'))]
         
         # Cache the filtered dataset
         df_sweep.reset_index(drop=True, inplace=True)
@@ -62,7 +64,7 @@ def auth():
     return env.bearer_token
 
 
-def create_header():
+def auth_header():
     '''
     Header required to access Twitter's API V2
     
@@ -111,7 +113,7 @@ def get_twitter_usernames():
     Returns
     -------
     twitter_accounts : pandas.core.DataFrame
-        A dataframe containing the twitter id, name, and username of each government entity.
+        A dataframe containing the Twitter numeric id, name of the account holder, and username of the account.
     '''
     data = [
         {
@@ -151,7 +153,7 @@ def get_twitter_usernames():
     # Transform the list of dictionaries into a dataframe
     twitter_accounts = pd.DataFrame.from_records(data)
     
-    # Format the names of the Mayor of Los Angeles and LADOT.
+    # Replace the account holders' name to be more descriptive.
     twitter_accounts.name = twitter_accounts.name.str.replace('MayorOfLA', 'Eric Garcetti')
     twitter_accounts.name = twitter_accounts.name.str.replace('LADOT', 'Los Angeles Department of Transportation')
     
@@ -170,21 +172,20 @@ def tweet_info(account, tweet):
         
     Returns
     -------
-    tweet_data
-
+    tweet_data : pandas.core.DataFrame
     '''
     tweet_data = pd.DataFrame({'post_time': pd.to_datetime(tweet['created_at']),
-                                           'id': account['id'],
-                                           'name': account['name'],
-                                           'username': account['username'],
-                                           'tweet': tweet['text'].lower(),
-                                           'retweet_count': tweet['public_metrics']['retweet_count'],
-                                           'reply_count': tweet['public_metrics']['reply_count'],
-                                           'like_count': tweet['public_metrics']['like_count'],
-                                           'quote_count': tweet['public_metrics']['quote_count'],
-                                           'tweet_url_id': tweet['id']
-                                           },index=[0])
-    return tweet_data
+                               'id': account['id'],
+                               'name': account['name'],
+                               'username': account['username'],
+                               'tweet': tweet['text'].lower(),
+                               'retweet_count': tweet['public_metrics']['retweet_count'],
+                               'reply_count': tweet['public_metrics']['reply_count'],
+                               'like_count': tweet['public_metrics']['like_count'],
+                               'quote_count': tweet['public_metrics']['quote_count'],
+                               'tweet_url_id': tweet['id']
+                               },index=[0])
+    return tweet_data   
     
     
 def get_twitter_data():
@@ -221,7 +222,7 @@ def get_twitter_data():
         num_accounts = len(twitter_accounts)
         
         # Store the URL header to a variable
-        credentials = create_header()
+        credentials = auth_header()
         
         # Create an empty DataFrame to store the tweets from each account
         df = pd.DataFrame()
@@ -261,8 +262,6 @@ def get_twitter_data():
         
         # Cache the dataframe as a CSV file in the local directory.
         df.to_csv(filename, index=False)
-        
-        # Return Twitter data
         return df
     else:
         # Return Twitter data
