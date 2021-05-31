@@ -9,7 +9,6 @@ from time import sleep
 sys.path.insert(1, '../env.py')
 import env
 
-
 #################################### Acquire Parking Citation Data ######################################
 def get_citation_data():
     '''
@@ -21,7 +20,7 @@ def get_citation_data():
     df : pandas.core.DataFrame
         Pandas dataframe of Los Angeles parking citations.
     '''
-    df = pd.read_csv('./data/parking-citations.csv')
+    df = pd.read_csv('./data/raw/parking-citations.csv')
     return df
 
 
@@ -35,7 +34,7 @@ def get_sweep_data():
     df_sweep : pandas.core.DataFrame
     '''
     # File name of street sweeping data
-    filename = './data/sweeping-citations.csv'
+    filename = './data/raw/sweeping-citations.csv'
 
     if os.path.exists(filename):
         return pd.read_csv(filename)
@@ -190,7 +189,7 @@ def tweet_info(account, tweet):
     
 def get_twitter_data():
     '''
-    Returns the twitter data for each city council official that signed a memo to resume Street Sweeping on
+    Returns the twitter data for each city council official that signed the motion to resume Street Sweeping on
     10/15/2020.
     
     Link to document:
@@ -210,7 +209,7 @@ def get_twitter_data():
              The cached tweets of each city council representative and LADOT between 09/30/2020 - 10/15/2020
     '''
     # Check the local directory for the Twitter data
-    filename = 'tweets.csv'
+    filename = './data/prepared/tweets.csv'
     cache = check_local_cache(file=filename)
     
     
@@ -243,7 +242,7 @@ def get_twitter_data():
             # Set 3 second delay between each GET request
             sleep(3)
 
-            # Use json.loads() to index into the `data` key of the response object.
+            # Use json.loads() to index into the `data` key of the response dictionary.
             # Encode from bytes to UTF-8
             tweets = json.loads(response.text.encode('UTF-8'))['data']
 

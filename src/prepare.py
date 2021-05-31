@@ -15,6 +15,9 @@ def drop_features(df):
     
     Returns a dataframe.
     '''
+    # Drop duplicate rows
+    df.drop_duplicates(inplace=True)
+    
     # Columns missing more than 70% of values.
     # Analyzing 1 citation, "Street Sweeping" drop 'violation code'.
     columns_to_drop =['vin',
@@ -31,6 +34,9 @@ def drop_features(df):
     
     # Drop rows with missing values
     df = df.dropna(axis=0)
+    
+    # Drop duplicate rows
+    df.drop_duplicates(inplace=True)
     
     # Return dataframe
     return df
@@ -111,7 +117,7 @@ def add_features(df):
 # Prepare Street Sweeping Citations Data
 
 ##################################################################################################
-def prep_sweep_data(df):
+def prep_sweep_data(df=''):
     '''
     Accepts parking citation data from The City of Los Angeles.
     Returns prepared version of the data for exploration.
@@ -130,7 +136,7 @@ def prep_sweep_data(df):
     df : pandas.core.DataFrame
         Returns a prepared parking citation data.
     '''
-    filename = './data/train.csv'
+    filename = './data/prepared/train.csv'
     
     if os.path.exists(filename):
         return pd.read_csv(filename)
