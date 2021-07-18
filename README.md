@@ -3,11 +3,11 @@
 ![Executive-Summary](visuals/ladot_executive_summary.png)
 ## Business Goal
 
-Determine if the LADOT's digital communication plan educated the public about street sweeping during COVID-19.
+Determine if the LADOT's digital communication plan educated the public on continued street sweeping citations during COVID-19.
 
 ## Background
 
-### COVID-19 hits California, Street Sweeping Stopped
+### COVID-19 hits California, Street Sweeping Suspended
 On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across the city, putting a __temporary halt to the issuance of street sweeping citations__.  Suspending citations allowed residents to practice social distancing during the outbreak of COVID-19. - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/city-council/LADOT-transition-plan.pdf)
 - Once a week, Angelenos are required to move vehicles parked in the street to make way for routine sweeps.
 - Failing to do so results in a $73 citation.
@@ -16,7 +16,7 @@ On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across t
 Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
 - LADOT and City Council members used Twitter to spread the initial announcement.
 - News stations did not cover the story until October 15, 2020 or later.
-- LADOT placed flyers on windshields.
+- LADOT placed flyers on windshields. [add link to video of news anchors interview with LADOT Representative]
 
 ## Data Dictionary
 
@@ -46,18 +46,13 @@ Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted
 **City Documents**
 Access the Los Angeles City Council documents from the official source [here](https://cityclerk.lacity.org/lacityclerkconnect/index.cfm?fa=ccfi.viewrecord&cfnumber=20-1365).
 
-## Initial Thoughts
-- Why did street sweeping services stop in the first place?
-- What communication channels did the City of Los Angeles use to inform the public?
-- Which streets and neighborhoods were impacted?
-
 # Project Steps
 ## Acquire
 __Parking Citation Data__
 Download the dataset [here](https://www.kaggle.com/cityofLA/los-angeles-parking-citations/discussion) stored as `parking-citations.csv`. The dataset contains approximately 7 years worth of parking citations issued in Los Angeles, California.
 
 __Text data__
-- Twitter: Los Angeles City Council and the Los Angeles Department of Transportation.
+- Twitter: Los Angeles City Council and the Los Angeles Department of Transportation tweets. Requires a API Key and you'll need to apply for a developer account.
 
 ## Prepare
 **Missing Values**
@@ -84,12 +79,24 @@ __Text data__
 
 ### City Council and the Los Angeles Department of Transportation Twitter Data
 
+The Los Angeles Department of Transportation generated the most engagement related to parking enforcement.
+- @LADOTofficial has 14.2K twitter followers in city with [3,145,520 adults](https://www.google.com/search?client=firefox-b-1-d&q=how+many+adults+live+in+los+angeles).
+- Los Angeles City Council Members @, @, @, tweeted once or not at all.
+- Mayor Garcetti, @MayorOfLA, has 417.9K followers. That's more than all other city official twitter accounts combined. In the future, he or any mayor could share city service updates with the public using the mayoral twitter account.
+
 ### Street Sweeping Citations
 Parking Citations
 - Map of citations
 
 ### Hypotheses
+
 Were street sweeping fines collected from 10/15/2020 - 11/15/2020 significantly greater than average?
+> 𝐻0: Fines collected from 10/15/2020 - 11/15/2020 are less than or equal to the average.
+> 
+> 𝐻1: Fines collected from 10/15/2020 - 11/15/2020 are significantly greater than average.
+>
+> Outcome: 
+<br>
 
 
 ## Conclusions
