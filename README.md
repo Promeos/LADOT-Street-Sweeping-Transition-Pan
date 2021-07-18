@@ -11,8 +11,7 @@
 
 ### COVID-19 hits California, Street Sweeping Suspended
 On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across the city, putting a __temporary halt to the issuance of street sweeping citations__.  Suspending citations allowed residents to practice social distancing during the outbreak of COVID-19. - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/city-council/LADOT-transition-plan.pdf)
-- Once a week, Angelenos are required to move vehicles parked in the street to make way for routine sweeps.
-- Failing to do so results in a $73 citation.
+- Angelenos are required to move vehicles parked in the street to make way for routine sweeps. Failing to do so results in a $73 citation.
 
 ### City Council Votes to Resume Street Sweeping
 Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
