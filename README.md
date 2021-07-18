@@ -1,17 +1,16 @@
 ![Header](visuals/ladot.png)
 
 ![Executive-Summary](visuals/ladot_executive_summary.png)
-## Goals
+## Business Goal
 
-1. Use Twitter's API to analyze tweets from City Council and the Los Angeles Department of Transportation from 09/30/2020 - 10/15/2020.
-2. Use historical street sweeping citations to determine the impact of public outreach efforts.
+Determine if the LADOT's digital communication plan educated the public about street sweeping during COVID-19.
 
 ## Background
 
 ### COVID-19 hits California, Street Sweeping Stopped
-On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across the city, putting a __temporary halt to the issuance of street sweeping citations__.  This allowed residents to effectively practice the safe social distancing necessary during the outbreak of COVID-19. - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/city-council/LADOT-transition-plan.pdf)
-- Once a week, Angelenos are required to move their vehicles to make way for street sweeping.
-- If the owner does not move their vehicle, they receive a $73 citation.
+On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across the city, putting a __temporary halt to the issuance of street sweeping citations__.  Suspending citations allowed residents to practice social distancing during the outbreak of COVID-19. - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/city-council/LADOT-transition-plan.pdf)
+- Once a week, Angelenos are required to move vehicles parked in the street to make way for routine sweeps.
+- Failing to do so results in a $73 citation.
 
 ### City Council Votes to Resume Street Sweeping
 Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
@@ -49,7 +48,7 @@ Access the Los Angeles City Council documents from the official source [here](ht
 
 ## Initial Thoughts
 - Why did street sweeping services stop in the first place?
-- What strategies did the City of Los Angeles use to inform the public?
+- What communication channels did the City of Los Angeles use to inform the public?
 - Which streets and neighborhoods were impacted?
 
 # Project Steps
