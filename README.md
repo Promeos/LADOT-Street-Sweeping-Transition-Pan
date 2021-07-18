@@ -6,7 +6,6 @@
 1. Determine if LADOT's digital communication plan informed the public about street sweeping citations during COVID-19.
 2. Determine whether the communitcation plan prevented fines or generated fines.
 
-
 ## Background
 
 ### COVID-19 hits California, Street Sweeping Suspended
@@ -14,7 +13,7 @@ On March 16, 2020, the Mayor of Los Angeles relaxed parking enforcement across t
 - Angelenos are required to move vehicles parked in the street to make way for routine sweeps. Failing to do so results in a $73 citation.
 
 ### City Council Votes to Resume Street Sweeping
-Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping enforcement__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
+Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted public outreach to inform Angelenos on the timing of __resumed street sweeping__." - [Source](https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/LADOT/enforcement.pdf)
 - LADOT and City Council members used Twitter to spread the initial announcement.
 - News stations did not cover the story until October 15, 2020 or later.
 - LADOT placed flyers on windshields. [add link to video of news anchors interview with LADOT Representative]
@@ -82,9 +81,9 @@ __Text data__
 ### City Council and the Los Angeles Department of Transportation Twitter Data
 
 The Los Angeles Department of Transportation generated the most engagement related to parking enforcement.
-- @LADOTofficial has 14.2K twitter followers in city with [3,145,520 adults](https://www.google.com/search?client=firefox-b-1-d&q=how+many+adults+live+in+los+angeles), meaning less than 1% of adults in Los Angeles follow LADOT.
-- Los Angeles City Council Members @, @, @, tweeted once or not at all.
-- Mayor Garcetti, @MayorOfLA, has 417.9K followers. That's more than all other city official twitter accounts combined. In the future, he or any mayor, could share city service updates with the public using the mayoral twitter account.
+- @LADOTofficial has 14.2K Twitter followers in a city with [3,145,520 adults](https://www.google.com/search?client=firefox-b-1-d&q=how+many+adults+live+in+los+angeles), meaning less than 1% of adults in Los Angeles follow LADOT.
+- Los Angeles City Council Members Nury Martinez, Curren D. Price Jr. and Joe Buscaino, tweeted once or not at all.
+- Mayor Garcetti, @MayorOfLA, has 417.9K followers. That's more than all other city official twitter accounts combined. In the future, he or any mayor could share city service updates with the public using the mayoral Twitter account.
 
 ### Street Sweeping Citations
 Parking Citations
