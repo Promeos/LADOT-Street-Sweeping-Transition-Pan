@@ -3,7 +3,9 @@
 ![Executive-Summary](visuals/ladot_executive_summary.png)
 ## Business Goal
 
-Determine if the LADOT's digital communication plan educated the public on continued street sweeping citations during COVID-19.
+1. Determine if LADOT's digital communication plan informed the public about street sweeping citations during COVID-19.
+2. Determine whether the communitcation plan prevented fines or generated fines.
+
 
 ## Background
 
@@ -43,8 +45,9 @@ Between September 30, 2020 and October 14, 2020 LADOT and City Council conducted
 | issue_hour             | Hour of the citation issue time. 24HR Military Time                                |
 | issue_minute           | Minute of the citation issue time.                                                 |
 
-**City Documents**
-Access the Los Angeles City Council documents from the official source [here](https://cityclerk.lacity.org/lacityclerkconnect/index.cfm?fa=ccfi.viewrecord&cfnumber=20-1365).
+## **City Documents**
+
+Access the Los Angeles City Council documents from the Los Angeles City Clerk's Office [here](https://cityclerk.lacity.org/lacityclerkconnect/index.cfm?fa=ccfi.viewrecord&cfnumber=20-1365).
 
 # Project Steps
 ## Acquire
