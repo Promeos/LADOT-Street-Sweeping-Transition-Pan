@@ -83,7 +83,7 @@ __Text data__
 ### City Council and the Los Angeles Department of Transportation Twitter Data
 
 The Los Angeles Department of Transportation generated the most engagement related to parking enforcement.
-- @LADOTofficial has 14.2K twitter followers in city with [3,145,520 adults](https://www.google.com/search?client=firefox-b-1-d&q=how+many+adults+live+in+los+angeles), meaning less than 1% of adults follow LADOT.
+- @LADOTofficial has 14.2K twitter followers in city with [3,145,520 adults](https://www.google.com/search?client=firefox-b-1-d&q=how+many+adults+live+in+los+angeles), meaning less than 1% of adults in Los Angeles follow LADOT.
 - Los Angeles City Council Members @, @, @, tweeted once or not at all.
 - Mayor Garcetti, @MayorOfLA, has 417.9K followers. That's more than all other city official twitter accounts combined. In the future, he or any mayor, could share city service updates with the public using the mayoral twitter account.
 
