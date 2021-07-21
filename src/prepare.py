@@ -1,4 +1,4 @@
-# Import libraries
+# Import data prep libraries
 import pandas as pd
 import numpy as np
 import os
@@ -8,119 +8,115 @@ from pyproj import Proj, transform
 
 
 ################################ Data Prep Functions #########################################
-def drop_features(df):
+def drop_features(data):
     '''
-    This function accepts a dataframe and drops columns missing more than 70% of values. Rows with missing values
-    are dropped from the dataset.
+    Drop unused features from the dataset.
     
-    Returns a dataframe.
+    Parameters
+    ---------
+    data : pandas.core.DataFrame
+    
     '''
-    # Drop duplicate rows
-    df.drop_duplicates(inplace=True)
+    data.drop_duplicates(inplace=True)
     
-    # Columns missing more than 70% of values.
-    # Analyzing 1 citation, "Street Sweeping" drop 'violation code'.
-    columns_to_drop =['vin',
-                      'marked_time',
-                      'color_description',
-                      'body_style_description',
-                      'agency_description',
-                      'meter_id',
-                      'ticket_number',
-                      'violation_code']
+    # Drop features not relevant to the project.
+    features_to_drop =['vin', 'rp_state_plate', 'plate_expiry_date', 'make',
+                      'body_style', 'color', 'marked_time', 'color_description',
+                      'body_style_description', 'agency_description', 'meter_id',
+                      'ticket_number', 'violation_code']
     
-    # Drop columns
-    df.drop(columns=columns_to_drop, inplace=True)
+    data.drop(columns=features_to_drop, inplace=True)
     
-    # Drop rows with missing values
-    df = df.dropna(axis=0)
+    # Drop citations with missing data or duplicated.
+    dataset = data.dropna(axis=0)
     
-    # Drop duplicate rows
-    df.drop_duplicates(inplace=True)
-    
-    # Return dataframe
-    return df
+    return dataset
 
 
-def convert_coordinates(df):
+def convert_coordinates(data):
     '''
-    Accepts a pandas dataframe with lat/long values in NAD1983StatePlaneCaliforniaVFIPS0405 feet projection and
-    transforms lat/long values to EPSG:4326 World Geodetic System 1984 - used in GPS [Standard].
+    Transforms lat/long coordinates from NAD1983StatePlaneCaliforniaVFIPS0405 feet projection to
+    EPSG:4326 World Geodetic System 1984.
     
-    Returns transformed latitude and longitude columns.
+    EPSG 4326 is the standard coordinates used in GPS.
     
     Requirements
     ------------
-    You will need to install `pyproj` to use this function.
     > pip install pyproj
     
     Parameters
     ----------
-    df : pandas.core.DataFrame
-        Any pandas dataframe with latitude and longitude columns with coordinates measured
+    data : pandas.core.DataFrame
+        Any pandas dataframe with latitude and longitude coordinates measured
         in NAD1983StatePlaneCaliforniaVFIPS0405 feet projection.
         
     Returns
     -------
     df : pandas.core.DataFrame
-        Returns a pandas dataframe with latitude and longitude columns with EPSG:4326 values.
+        A pandas dataframe with latitude and longitude coordinates in EPSG:4326.
     '''
     
-    # String to represent NAD1983StatePlaneCaliforniaVFIPS0405
-    pm = '+proj=lcc +lat_1=34.03333333333333 +lat_2=35.46666666666667 +lat_0=33.5 +lon_0=-118 +x_0=2000000 ' \
+    # Conversion string to transform NAD1983StatePlaneCaliforniaVFIPS0405 coordindates to EPSG:4326 
+    state_plane = '+proj=lcc +lat_1=34.03333333333333 +lat_2=35.46666666666667 +lat_0=33.5 +lon_0=-118 +x_0=2000000 ' \
          '+y_0=500000.0000000002 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs'
 
-    # Store lat/long values in variables 
-    x_latitude, y_longitude = df['latitude'].values, df['longitude'].values
+    # Store lat/long values for transformation 
+    lat, long = data['latitude'].values, data['longitude'].values
     
-    # Transform points between two coordinate systems defined by the Proj instances p1 and p2.
+    # Convert
     # Convert coordinates from US Survey Feet to EPSG:4326
-    df['longitude'], df['latitude'] = transform(p1=Proj(pm, preserve_units=True),
-                                                p2=Proj("+init=epsg:4326"),
-                                                x=x_latitude,
-                                                y=y_longitude)
+    data['longitude'], data['latitude'] = transform(p1=Proj(state_plane, preserve_units=True),
+                                                    p2=Proj("+init=epsg:4326"),
+                                                    x=lat,
+                                                    y=long)
     
-    # Normalize lat/log values by rounding to 4 digits.
-    df.latitude = np.round(df.latitude, 4)
-    df.longitude = np.round(df.longitude, 4)
+    # Normalize lat/long coordinates by rounding to 4 decimal places.
+    data.latitude = np.round(data.latitude, 4)
+    data.longitude = np.round(data.longitude, 4)
     
-    # Drop citations missing coordinates.
-    df = df.loc[(df.longitude != 99999.0)&(df.latitude != 99999.0)]
+    # Drop citations with invalid coordinates.
+    dataset = data.loc[(data.longitude != 99999.0)&(data.latitude != 99999.0)]
     
-    # Return the dataframe with the transformed lat/long.
-    return df
+    return dataset
 
 
-def add_features(df):
-    '''
-    Accepts a parking citation dataframe
-    Returns a dataframe with new features: day_of_week, issue_year, issue_hour, and issue_minute
-    '''
-    # Create features using issue_data and issue_time
-    df = df.assign(
-    day_of_week = df.issue_date.dt.day_name(),
-    issue_year = df.issue_date.dt.year,
-    issue_hour = df.issue_time.dt.hour,
-    issue_minute = df.issue_time.dt.minute,
-)
-    # Cast new features from float to int dtype.
-    df.issue_year = df.issue_year.astype(int)
-    df.issue_hour = df.issue_hour.astype(int)
-    df.issue_minute = df.issue_minute.astype(int)
+## Bug Fix in Progess
+# def add_features(data):
+#     '''
+#     Cast date and time values to datetime data type. Add new features day_of_week, issue_year, issue_hour, and issue_minute
+#     '''
+#     # Cast issue_date and issue_time from a string to a datetime data type.
+#     data.issue_date = pd.to_datetime(data.issue_date)
+#     data.issue_time = pd.to_datetime(data.issue_time, format='%H%M', errors='coerce').dt.time
     
-    # Return data
-    return df
+#     # Combine new features and casting inside of the pandas assign function.
+#     # Create features using issue_data and issue_time
+#     df = df.assign(
+#     day_of_week = df.issue_date.dt.day_name(),
+#     issue_year = df.issue_date.dt.year,
+#     issue_hour = df.issue_time.dt.hour,
+#     issue_minute = df.issue_time.dt.minute,
+# )
+#     print(type(df.issue_hour))
+#     print(type(df.issue_hour))
+    
+#     # Cast new features from float to int dtype.
+#     df.issue_year = df.issue_year.astype(int)
+#     df.issue_hour = df.issue_hour.astype(int)
+#     df.issue_minute = df.issue_minute.astype(int)
+    
+#     # Return data
+#     return 
 
   
 ##################################################################################################
 
-# Prepare Street Sweeping Citations Data
+# Prepare Street Sweeping Data
 
 ##################################################################################################
-def prep_sweep_data(df=''):
+def prep_sweep_data(data):
     '''
-    Accepts parking citation data from The City of Los Angeles.
-    Returns prepared version of the data for exploration.
+    Return prepared street sweeping data for exploration.
     
     Requirements
     ------------
@@ -142,31 +138,20 @@ def prep_sweep_data(df=''):
         return pd.read_csv(filename)
     else: 
         # Remove spaces and lowercase column names.
-        formatted_column_names = [x.replace(' ', '_').lower() for x in df.columns.to_list()]
-        df.columns = formatted_column_names
-        
-        # Cast plate expiration from a float to a datetime data type.
-        df.plate_expiry_date = df.plate_expiry_date.fillna(0).astype(np.int)
-        df.plate_expiry_date = pd.to_datetime(df.plate_expiry_date, format='%Y%m', errors='coerce')
-        
-        # Cast issue_date and issue_time from a string to a datetime data type.
-        df.issue_date = pd.to_datetime(df.issue_date)
-        df.issue_time = pd.to_datetime(df.issue_time, format='%H%M', errors='coerce')
-        
-        # Convert agency from float to integer
-        df.agency = df.agency.astype(np.int)
+        formatted_feature_names = [x.replace(' ', '_').lower() for x in data.columns.to_list()]
+        data.columns = formatted_feature_names
 
         # Drop columns, convert coordinates, and add new features
-        df = drop_features(df)
-        df = convert_coordinates(df)
-        df = add_features(df)
+        data = drop_features(data)
+        data = convert_coordinates(data)
+        data = add_features(data)
         
         # Drop the index and sort by issue_date
-        df = df.sort_values(by='issue_date')
-        df.reset_index(drop=True, inplace=True)
+        dataset = data.sort_values(by=['issue_date', 'issue_time'])
+        dataset.reset_index(drop=True, inplace=True)
         
         # Cache file
-        df.to_csv(filename, index=False)
+        dataset.to_csv(filename, index=False)
         
         # Return the prepared dataframe.
-        return df
+        return dataset
