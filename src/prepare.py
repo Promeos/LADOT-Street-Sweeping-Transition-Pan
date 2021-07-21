@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-# Library to covert coordinates.
+# Library to covert coordinates
 from pyproj import Proj, transform
 
 
