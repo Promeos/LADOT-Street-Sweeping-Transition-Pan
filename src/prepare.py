@@ -46,7 +46,7 @@ def convert_coordinates(data):
     
     Parameters
     ----------
-    data : pandas.core.DataFrame
+    dataset : pandas.core.DataFrame
         Any pandas dataframe with latitude and longitude coordinates measured
         in NAD1983StatePlaneCaliforniaVFIPS0405 feet projection.
         
@@ -125,12 +125,12 @@ def prep_sweep_data(data):
     
     Parameters
     ----------
-    df : pandas.core.DataFrame
+    data : pandas.core.DataFrame
         Parking citation data from The City of Los Angeles.
     Returns
     -------
-    df : pandas.core.DataFrame
-        Returns a prepared parking citation data.
+    dataset : pandas.core.DataFrame
+        Returns street sweeping pandas DataFrame.
     '''
     filename = './data/prepared/train.csv'
     
