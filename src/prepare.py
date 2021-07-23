@@ -1,4 +1,5 @@
 # Import data prep libraries
+from ast import parse
 import pandas as pd
 import numpy as np
 import os
@@ -166,7 +167,7 @@ def add_features(data):
 # Prepare Street Sweeping Data
 
 ##################################################################################################
-def prep_sweep_data(data):
+def prep_sweep_data(data=None):
     '''
     Return prepared street sweeping data for exploration.
     
@@ -188,7 +189,9 @@ def prep_sweep_data(data):
     filename = './data/prepared/train.csv'
     
     if os.path.exists(filename):
-        return pd.read_csv(filename)
+        dataset = pd.read_csv(filename, parse_dates=['issue_date'], infer_datetime_format=True)
+        dataset.issue_time = pd.to_datetime(dataset.issue_time).dt.time
+        return dataset
     else: 
         # Remove spaces and lowercase column names.
         formatted_feature_names = [x.replace(' ', '_').lower() for x in data.columns.to_list()]
