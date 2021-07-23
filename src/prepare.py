@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import os
+from datetime import time
 
 # Library to covert coordinates
 from pyproj import Proj, transform
@@ -16,6 +17,19 @@ def drop_features(data):
     ---------
     data : pandas.core.DataFrame
     
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+        A pandas DataFrame with features:
+        - issue_date
+        - issue_time
+        - location
+        - route
+        - agency
+        - violation_description
+        - fine_amount
+        - latitude
+        - longitude
     '''
     data.drop_duplicates(inplace=True)
     
@@ -29,6 +43,46 @@ def drop_features(data):
     
     # Drop citations with missing data or duplicated.
     dataset = data.dropna(axis=0)
+    
+    return dataset
+    
+
+def cast_time(data):
+    '''
+    Converts citation issue time from a float to a Timestamp data type.
+    
+    Parameters
+    ---------- 
+    data : pandas.core.DataFrame
+    
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+    '''
+    data.issue_date = pd.to_datetime(data.issue_date)
+    data.issue_time = data.issue_time.astype('int').astype('str')
+    
+    times = []
+
+    # Parse each time according to its length.
+    for t in data.issue_time:
+        if len(t) == 4:
+            h = t[:2]
+            m = t[2:]
+        elif len(t) == 3:
+            h = t[0]
+            m = t[1:]
+        else:
+            h = '0'
+            m = '0'
+        h = int(h)
+        m = int(m)
+        times.append(time(hour=h, minute=m))
+    
+    data.issue_time = times
+    
+    # Remove invalid citation issue times from the dataset.
+    dataset = data[data.issue_time != time(hour=0, minute=0, second=0)]
     
     return dataset
 
@@ -46,13 +100,13 @@ def convert_coordinates(data):
     
     Parameters
     ----------
-    dataset : pandas.core.DataFrame
+    data : pandas.core.DataFrame
         Any pandas dataframe with latitude and longitude coordinates measured
         in NAD1983StatePlaneCaliforniaVFIPS0405 feet projection.
         
     Returns
     -------
-    df : pandas.core.DataFrame
+    dataset : pandas.core.DataFrame
         A pandas dataframe with latitude and longitude coordinates in EPSG:4326.
     '''
     
@@ -80,33 +134,31 @@ def convert_coordinates(data):
     return dataset
 
 
-## Bug Fix in Progess
-# def add_features(data):
-#     '''
-#     Cast date and time values to datetime data type. Add new features day_of_week, issue_year, issue_hour, and issue_minute
-#     '''
-#     # Cast issue_date and issue_time from a string to a datetime data type.
-#     data.issue_date = pd.to_datetime(data.issue_date)
-#     data.issue_time = pd.to_datetime(data.issue_time, format='%H%M', errors='coerce').dt.time
+def add_features(data):
+    '''
+    Add new features: citation_year, citation_month, citation_day,
+    citation_hour, day_of_week, citation_hour, and citation_minute
     
-#     # Combine new features and casting inside of the pandas assign function.
-#     # Create features using issue_data and issue_time
-#     df = df.assign(
-#     day_of_week = df.issue_date.dt.day_name(),
-#     issue_year = df.issue_date.dt.year,
-#     issue_hour = df.issue_time.dt.hour,
-#     issue_minute = df.issue_time.dt.minute,
-# )
-#     print(type(df.issue_hour))
-#     print(type(df.issue_hour))
+    Parameters
+    ---------- 
+    data : pandas.core.DataFrame
     
-#     # Cast new features from float to int dtype.
-#     df.issue_year = df.issue_year.astype(int)
-#     df.issue_hour = df.issue_hour.astype(int)
-#     df.issue_minute = df.issue_minute.astype(int)
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+    '''
+
+    # Create features using issue_data and issue_time
+    dataset = data.assign(
+        citation_year = data.issue_date.dt.year,
+        citation_month = data.issue_date.dt.month,
+        citation_day = data.issue_date.dt.day,
+        day_of_week = data.issue_date.dt.day_name()
+)   
+    dataset['citation_hour'] = pd.to_datetime(data.issue_time, format='%H:%M:%S').dt.hour
+    dataset['citation_minute'] = pd.to_datetime(data.issue_time, format='%H:%M:%S').dt.minute
     
-#     # Return data
-#     return 
+    return dataset
 
   
 ##################################################################################################
@@ -127,6 +179,7 @@ def prep_sweep_data(data):
     ----------
     data : pandas.core.DataFrame
         Parking citation data from The City of Los Angeles.
+
     Returns
     -------
     dataset : pandas.core.DataFrame
@@ -141,14 +194,21 @@ def prep_sweep_data(data):
         formatted_feature_names = [x.replace(' ', '_').lower() for x in data.columns.to_list()]
         data.columns = formatted_feature_names
 
-        # Drop columns, convert coordinates, and add new features
+        # Drop unused features, filter, cast date and time datatypes, convert coordinates, and add new features.
         data = drop_features(data)
+        data = cast_time(data)
         data = convert_coordinates(data)
         data = add_features(data)
         
         # Drop the index and sort by issue_date
         dataset = data.sort_values(by=['issue_date', 'issue_time'])
         dataset.reset_index(drop=True, inplace=True)
+        
+        # Filter citation times between 7:30 - 15:30
+        min_time = time(hour=7, minute=30)
+        max_time = time(hour=15, minute=30)
+        
+        dataset = dataset[(dataset['issue_time'] >= min_time)&(dataset['issue_time'] <= max_time)]
         
         # Cache file
         dataset.to_csv(filename, index=False)

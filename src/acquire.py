@@ -17,17 +17,17 @@ def get_citation_data():
     Prerequisite:
     - Download dataset from https://www.kaggle.com/cityofLA/los-angeles-parking-citations
     
-    df : pandas.core.DataFrame
+    dataset : pandas.core.DataFrame
         Pandas dataframe of Los Angeles parking citations.
     '''
-    df = pd.read_csv('./data/raw/parking-citations.csv')
-    return df
+    dataset = pd.read_csv('./data/raw/parking-citations.csv')
+    return dataset
 
 
 def get_sweep_data():
     '''
-    Returns a dataframe of Street Sweeping citations issued in
-    Los Angeles, CA from 01/01/2017 - 04/12/2021
+    Returns a dataframe of street sweeping citations issued in
+    Los Angeles, CA from 01/01/2017 - 04/12/2021.
     
     Returns
     -------
@@ -39,15 +39,15 @@ def get_sweep_data():
     if os.path.exists(filename):
         return pd.read_csv(filename)
     else:
-        df = get_citation_data()
+        data = get_citation_data()
         
         # Filter for street sweeper citations data issued 2017-Today.
-        df_sweep = df.loc[(df['Issue Date'] >= '2017-01-01')&(df['Violation Description'].str.contains('STREET CLEAN'))]
+        dataset = data.loc[(data['Issue Date'] >= '2017-01-01')&(data['Violation Description'].str.contains('STREET CLEAN'))]
         
         # Cache the filtered dataset
-        df_sweep.reset_index(drop=True, inplace=True)
-        df_sweep.to_csv(filename, index=False)
-        return df_sweep
+        dataset.reset_index(drop=True, inplace=True)
+        dataset.to_csv(filename, index=False)
+        return dataset
 
 
 #################################### Acquire Twitter Data ###################################################
@@ -162,12 +162,15 @@ def get_twitter_usernames():
 
 def tweet_info(account, tweet):
     '''
-    Structures the data returned from Twitter's API into a Pandas DataFrame.
+    Structures the data returned from Twitter's API into a pandas DataFrame.
 
     Parameters
     ----------
-    file : str
-        The name of the file in the local directory
+    account : str
+        The id, name, and username of each city official stored in get_twitter_usernames()
+        
+    tweet : dict
+        A nested dictionary with data for a single tweet.
         
     Returns
     -------
