@@ -1,6 +1,8 @@
 # Import libraries
+import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 ############################### Global Variables #########################################
 
@@ -22,7 +24,7 @@ def street_sweep(data):
         dataset of street sweeping citations indexed by issue date.
     '''
 
-    dataset = data.set_index('issue_time')
+    dataset = data.copy().set_index('issue_date')
     return dataset
 
 
@@ -41,7 +43,12 @@ def resample_period(data, period='D'):
         Resample dataset of street sweeping citation revenue
     
     '''
-    dataset = data.resample(rule=period)['fine_amount'].sum()
+    dataset = data.resample(rule=period)[['fine_amount']].sum()
+
+    if period == 'D':
+        dataset['is_week_day'] = np.where(dataset.index.weekday < 5, 1, 0)
+        dataset['fine_amount'] = dataset['fine_amount'].where(dataset.index.weekday <= 5, 0).replace(0, np.NaN)
+    
     return dataset
 
 ############################### Visualizations ###########################################
