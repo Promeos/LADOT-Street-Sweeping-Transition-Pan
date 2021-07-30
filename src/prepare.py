@@ -228,7 +228,7 @@ def aggregate_sweep_days(data):
     dataset : pandas.core.DataFrame
         Resampled street sweeping citation revenue
     '''
-    dataset = data[(data.is_business_day == True)&(data.fine_amount > 69532)]
+    dataset = data[(data.is_business_day == True)&(data.revenue > 69532)]
     dataset = dataset.groupby(by=[dataset.index.year, dataset.index.month]).size()
     dataset.index = dataset.index.set_names(names=['year', 'month'])
     dataset = dataset.reset_index(name='num_days_cited')
