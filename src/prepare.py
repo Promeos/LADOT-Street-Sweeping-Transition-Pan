@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 from datetime import time
+from calendar import monthrange
 
 # Library to covert coordinates
 from pyproj import Proj, transform
@@ -155,13 +156,89 @@ def add_features(data):
         citation_month = data.issue_date.dt.month,
         citation_day = data.issue_date.dt.day,
         day_of_week = data.issue_date.dt.day_name()
-)   
+        )   
+    dataset.issue_date.dt.date
     dataset['citation_hour'] = pd.to_datetime(data.issue_time, format='%H:%M:%S').dt.hour
     dataset['citation_minute'] = pd.to_datetime(data.issue_time, format='%H:%M:%S').dt.minute
     
     return dataset
 
-  
+
+##################################################################################################
+
+# Time Series Preparation
+
+##################################################################################################
+def street_sweep(data):
+    '''
+    Set the index of the street sweeping dataset to 'issue_time' for resampling.
+    
+    Parameters
+    ----------
+    data : pandas.core.DataFrame
+        dataset of steet sweeping citations.
+    
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+        dataset of street sweeping citations indexed by issue date.
+    '''
+
+    dataset = data.copy().set_index('issue_date')
+    return dataset
+
+
+def resample_period(data, period='D'):
+    '''
+    Calculate citation revenue for the specified time period.
+    
+    Parameters
+    ----------
+    data : pandas.core.DataFrame
+        Street sweeping citations
+
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+        Resampled street sweeping citation revenue
+    
+    '''
+    dataset = data.resample(rule=period)[['fine_amount']].sum()
+
+    if period == 'D':
+        dataset['is_business_day'] = dataset.index.map(lambda x: np.is_busday(pd.to_datetime(x).date()))
+        dataset['fine_amount'] = dataset['fine_amount'].where(dataset.is_business_day != False, np.NaN).replace(0, np.NaN)
+
+    dataset.rename(columns={'fine_amount':'revenue'}, inplace=True)
+    
+    return dataset
+
+
+def aggregate_sweep_days(data):
+    '''
+    The total of days each month with regularly scheduled street sweeping.
+
+    Parameters
+    ----------
+    data : pandas.core.DataFrame
+        Dataset of street sweeping citations resample by month
+
+    Returns
+    -------
+    dataset : pandas.core.DataFrame
+        Resampled street sweeping citation revenue
+    '''
+    dataset = data[(data.is_business_day == True)&(data.fine_amount > 69532)]
+    dataset = dataset.groupby(by=[dataset.index.year, dataset.index.month]).size()
+    dataset.index = dataset.index.set_names(names=['year', 'month'])
+    dataset = dataset.reset_index(name='num_days_cited')
+
+    dataset.index = pd.to_datetime(dataset['year'].astype('str') + '-' + dataset['month'].astype('str') + '-01')
+    dataset.drop(columns=['year', 'month'], inplace=True)
+    dataset = dataset.resample('M').sum()
+
+    return dataset
+
 ##################################################################################################
 
 # Prepare Street Sweeping Data
