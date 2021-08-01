@@ -27,7 +27,7 @@ def get_citation_data():
 def get_sweep_data():
     '''
     Returns a dataframe of street sweeping citations issued in
-    Los Angeles, CA from 01/01/2017 - 04/12/2021.
+    Los Angeles, CA from 01/01/2017 - 03/31/2021.
     
     Returns
     -------
@@ -42,7 +42,7 @@ def get_sweep_data():
         data = get_citation_data()
         
         # Filter for street sweeper citations data issued 2017-Today.
-        dataset = data.loc[(data['Issue Date'] >= '2017-01-01')&(data['Violation Description'].str.contains('STREET CLEAN'))]
+        dataset = data.loc[(data['Issue Date'] >= '2017-01-01')&(data['Issue Date'] <= '2021-03-31')&(data['Violation Description'].str.contains('STREET CLEAN'))]
         
         # Cache the filtered dataset
         dataset.reset_index(drop=True, inplace=True)
