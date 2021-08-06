@@ -42,10 +42,7 @@ def drop_features(data):
                       'ticket_number', 'violation_code']
     
     data.drop(columns=features_to_drop, inplace=True)
-    
-    # Drop citations with missing data or duplicated.
     dataset = data.dropna(axis=0)
-    
     return dataset
     
 
@@ -250,7 +247,7 @@ def prep_sweep_data(data=None):
     
     Requirements
     ------------
-    You will need to install `pyproj` to use this function.
+    Install `pyproj` to use this function.
     > pip install pyproj
     
     Parameters

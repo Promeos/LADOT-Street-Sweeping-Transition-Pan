@@ -24,20 +24,33 @@ def get_citation_data():
     return dataset
 
 
-def get_sweep_data():
+def get_sweep_data(prepared=False):
     '''
     Returns a dataframe of street sweeping citations issued in
     Los Angeles, CA from 01/01/2017 - 03/31/2021.
     
+    Parameters
+    ----------
+    prepared : bool, default False
+        False : Returns an unprepared version of the street sweeping violation dataset.
+        True : Returns a prepared version of the street sweeping violation dataset.
+
     Returns
     -------
-    df_sweep : pandas.core.DataFrame
+    dataset : pandas.core.DataFrame
+        Dataset of Street Sweeping Violations between 2017-01-01 and 2012-03-31.
     '''
     # File name of street sweeping data
-    filename = './data/raw/sweeping-citations.csv'
+    if prepared == True:
+        filename = './data/prepared/train.csv'
+    else:
+        filename = './data/raw/sweeping-citations.csv'
 
-    if os.path.exists(filename):
-        return pd.read_csv(filename)
+    if os.path.exists(filename) and prepared == True:
+        dataset = pd.read_csv(filename, parse_dates=['issue_date'], infer_datetime_format=True)
+        dataset.issue_time = pd.to_datetime(dataset.issue_time).dt.time
+    elif os.path.exists(filename) and prepared == False:
+        dataset = pd.read_csv(filename)
     else:
         data = get_citation_data()
         
@@ -47,13 +60,15 @@ def get_sweep_data():
         # Cache the filtered dataset
         dataset.reset_index(drop=True, inplace=True)
         dataset.to_csv(filename, index=False)
-        return dataset
+    return dataset
 
 
 #################################### Acquire Twitter Data ###################################################
 def auth():
     '''
-    Bearer Token used to access Twitter's API V2
+    Bearer Token to access Twitter's API V2
+
+    Apply for a Twitter Developer account to gain access to Twitter's API.
     
     Returns
     -------
@@ -85,7 +100,7 @@ def check_local_cache(file):
     Parameters
     ----------
     file : str
-        The name of the file in the local directory
+        The name of the CSV file in the local directory
         
     Returns
     -------
@@ -96,73 +111,11 @@ def check_local_cache(file):
         return pd.read_csv(file, index_col=False)
     else:
         return False
-    
-    
-def get_twitter_usernames():
-    '''
-    A list of dictionaries containing the unique twitter id, name, and username of
-    Los Angeles government officials who signed the motion to resume street sweeping
-    on 10/15/2020.
-    
-    Link to document:
-    https://github.com/Promeos/LADOT-COVID19-enforcement/blob/main/city-documents/city-council/public-outreach-period.pdf
-    
-    Note: Mayor Gracetti did not sign the motion.
-    
-    Returns
-    -------
-    twitter_accounts : pandas.core.DataFrame
-        A dataframe containing the Twitter numeric id, name of the account holder, and username of the account.
-    '''
-    data = [
-        {
-            "id": "17070113",
-            "name": "MayorOfLA",
-            "username": "MayorOfLA"
-        },
-        {
-            "id": "61261275",
-            "name": "LADOT",
-            "username": "LADOTofficial"
-        },
-        {
-            "id": "956763276",
-            "name": "Nury Martinez",
-            "username": "CD6Nury"
-        },
-        {
-            "id": "893602974",
-            "name": "Curren D. Price, Jr.",
-            "username": "CurrenDPriceJr"
-        },
-        {
-            "id": "341250146",
-            "name": "Joe Buscaino",
-            "username": "JoeBuscaino"
-        }
-    ]
-    
-    # Gil has not tweeted since 2019.
-    # {
-    # "id": "1167156666",
-    # "name": "Gil Cedillo",
-    # "username": "cmgilcedillo"
-    # }
-    
-    # Transform the list of dictionaries into a dataframe
-    twitter_accounts = pd.DataFrame.from_records(data)
-    
-    # Replace the account holders' name to be more descriptive.
-    twitter_accounts.name = twitter_accounts.name.str.replace('MayorOfLA', 'Eric Garcetti')
-    twitter_accounts.name = twitter_accounts.name.str.replace('LADOT', 'Los Angeles Department of Transportation')
-    
-    # Return the dataframe of Twitter accounts.
-    return twitter_accounts
 
 
-def tweet_info(account, tweet):
+def user_tweets(account, tweet):
     '''
-    Structures the data returned from Twitter's API into a pandas DataFrame.
+    Structure the Tweets returned from Twitter's API into a pandas DataFrame.
 
     Parameters
     ----------
@@ -208,30 +161,26 @@ def get_twitter_data():
             The cached tweets of each city council representative and LADOT between 09/30/2020 - 10/15/2020
             
     If `cache` is False:
-        df : pandas.core.frame.DataFrame
+        dataset : pandas.core.frame.DataFrame
              The cached tweets of each city council representative and LADOT between 09/30/2020 - 10/15/2020
     '''
-    # Check the local directory for the Twitter data
-    filename = './data/prepared/tweets.csv'
-    cache = check_local_cache(file=filename)
-    
+    # Paths to the datasets, if they exist.
+    path = './data/prepared/'
+    filename_dataset = 'tweets.csv'
+    filename_accounts = 'twitter_accounts.csv'
+    cache = check_local_cache(file=path+filename_dataset)
     
     if cache is False:
         # Store the dict of council members & LADOT's Twitter info.
-        twitter_accounts = get_twitter_usernames()
+        twitter_accounts = pd.read_csv(path+filename_accounts)
         
-        # Calculate the # of Twitter accounts in `twitter_accounts`
+        # Count the # of Twitter accounts to pass as an arg to tqdm to show user loading time.
         num_accounts = len(twitter_accounts)
         
-        # Store the URL header to a variable
-        credentials = auth_header()
-        
         # Create an empty DataFrame to store the tweets from each account
-        df = pd.DataFrame()
+        data = pd.DataFrame()
 
-        # For each account in the dataframe `twitter_accounts` acquire all tweets from
-        # 09-30-2020 to 10-14-2020.
-        # "tqdm.tqdm()" used to display loading status.
+        # Acquire Tweets from 09-30-2020 to 10-14-2020 for each user.
         for _, account in tqdm.tqdm(twitter_accounts.iterrows(), total=num_accounts):
             # API URL to acquire data from a specific Twitter account.
             url = f"https://api.twitter.com/2/users/{account['id']}/tweets?user.fields=created_at,description"\
@@ -239,32 +188,30 @@ def get_twitter_data():
                 + ",url,username,verified&max_results=100&start_time=2020-09-30T00:00:00Z&end_time=2020-10-15T00:00:00"\
                 + "Z&expansions=&tweet.fields=created_at,public_metrics,source,text"
             
-            # Send a GET response to the API using the URL and bearer token credentials
-            response = get(url, headers=credentials)
+            # Send a GET request to Twitter's API using developer credentials #Developer
+            response = get(url, headers=auth_header())
             
-            # Set 3 second delay between each GET request
+            # Don't get banned
             sleep(3)
 
-            # Use json.loads() to index into the `data` key of the response dictionary.
-            # Encode from bytes to UTF-8
             tweets = json.loads(response.text.encode('UTF-8'))['data']
 
-            # Extract the information from each tweet and store it as a row in `df`.
+            # Extract features from each tweet and add it to the dataset.
             for tweet in tweets:
-                tweet_data = tweet_info(account=account, tweet=tweet)
-                df = pd.concat([df, tweet_data])
+                tweet_data = user_tweets(account=account, tweet=tweet)
+                data = pd.concat([data, tweet_data])
                 
-        # Sort the tweets by Timestamp
-        df = df.sort_values(by=['post_time']).reset_index(drop=True)
+        # Sort the Tweets by Timestamp
+        dataset = data.sort_values(by=['post_time']).reset_index(drop=True)
         
         # Create a new column to store user engagement per Tweet
-        df = df.assign(
-            total_engagement = df[['retweet_count', 'reply_count', 'like_count', 'quote_count']].sum(axis=1)
+        dataset = dataset.assign(
+            total_engagement = dataset[['retweet_count', 'reply_count', 'like_count', 'quote_count']].sum(axis=1)
         )
         
         # Cache the dataframe as a CSV file in the local directory.
-        df.to_csv(filename, index=False)
-        return df
+        dataset.to_csv(path+filename_dataset, index=False)
+        return dataset
     else:
         # Return Twitter data
         return cache
